@@ -5,13 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class DeviceControlActivity extends AppCompatActivity {
@@ -31,6 +35,11 @@ public class DeviceControlActivity extends AppCompatActivity {
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     private boolean mConnected = false;
+
+    // UI
+    Button mButtonPokePartner;
+    Button mButtonPokeSelf;
+    Button mButtonStopBleService;
 
     // Handles various events fired by the Service.
     // ACTION_GATT_CONNECTED: connected to a GATT server.
@@ -63,6 +72,18 @@ public class DeviceControlActivity extends AppCompatActivity {
     private void clearUI() {
         mDataField.setText(R.string.no_data);
     }
+
+    private void sendPartnerPoke(){
+        // needs async task to prevent ui getting held up
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                BraceletServerApi.sendMessage(mContext, "POKE_PARTNER", BraceletServerApi.ASYNC);
+                return null;
+            }
+        }.execute();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +101,28 @@ public class DeviceControlActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
         mDataField = (TextView) findViewById(R.id.data_value);
+        mButtonPokePartner = (Button) findViewById(R.id.button_poke_partner);
+        mButtonPokePartner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendPartnerPoke();
+            }
+        });
+        mButtonPokeSelf = (Button) findViewById(R.id.button_poke_self);
+        mButtonPokeSelf.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final Intent intent = new Intent(MyGcmListenerService.ACTION_GCM_MESSAGE_AVAILABLE);
+                intent.putExtra(MyGcmListenerService.EXTRA_DATA, "POKE_SELF");
+                sendBroadcast(intent);
+            }
+        });
+        mButtonStopBleService = (Button) findViewById(R.id.button_stop_ble_service);
+        mButtonStopBleService.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendBroadcast(new Intent(ACTION_KILL_BLE_SERVICE));
+            }
+        });
+
+
 
         getSupportActionBar().setTitle(mDeviceName);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,7 +167,6 @@ public class DeviceControlActivity extends AppCompatActivity {
      public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_device_control, menu);
-        inflater.inflate(R.menu.gatt_services, menu);
         if (mConnected) {
             menu.findItem(R.id.menu_connect).setVisible(false);
             menu.findItem(R.id.menu_disconnect).setVisible(true);
@@ -140,20 +182,16 @@ public class DeviceControlActivity extends AppCompatActivity {
         switch(item.getItemId()) {
             case R.id.menu_connect:
                 sendBroadcast(new Intent(ACTION_DEVICE_CONNECT).putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress));
-                //mBluetoothLeService.connect(mDeviceAddress);
                 return true;
             case R.id.menu_disconnect:
                 KeyValueDB.setLastConnectedMac(mContext, null);
                 sendBroadcast(new Intent(ACTION_DEVICE_DISCONNECT));
-                //mBluetoothLeService.disconnect();
+                final Intent intentb = new Intent(this, DeviceScanActivity.class);
+                startActivity(intentb);
                 return true;
             case R.id.action_settings:
                 final Intent intenta = new Intent(this, SettingsActivity.class);
                 startActivity(intenta);
-                return true;
-            case R.id.action_disconnect:
-                final Intent intentb = new Intent(this, DeviceScanActivity.class);
-                startActivity(intentb);
                 return true;
             case android.R.id.home:
                 onBackPressed();

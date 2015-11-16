@@ -76,7 +76,7 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        BraceletServerApi.setDeviceGcmId(getApplicationContext(), token);
+        BraceletServerApi.setDeviceGcmId(getApplicationContext(), token, BraceletServerApi.SYNC);
     }
 
 }

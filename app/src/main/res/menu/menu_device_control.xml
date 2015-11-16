@@ -4,6 +4,10 @@
     tools:context="com.localhost.bracelet.DeviceControlActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_disconnect" android:title="@string/action_disconnect"
-        android:orderInCategory="10" app:showAsAction="never" />
+    <item android:id="@+id/menu_connect"
+        android:title="@string/menu_connect"
+        android:orderInCategory="100"/>
+    <item android:id="@+id/menu_disconnect"
+        android:title="@string/menu_disconnect"
+        android:orderInCategory="101"/>
 </menu>

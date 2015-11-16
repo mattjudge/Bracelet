@@ -111,7 +111,7 @@ public class BluetoothLeService extends Service {
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             if (UUID_SERIAL_COMMUNICATION.equals(characteristic.getUuid())) {
                 BraceletServerApi.sendMessage(getApplicationContext(),
-                        characteristic.getStringValue(0));
+                        characteristic.getStringValue(0), BraceletServerApi.SYNC);
             }
         }
     };

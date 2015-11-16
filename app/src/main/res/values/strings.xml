@@ -32,7 +32,6 @@
     <string name="poke_partner">Poke Paired Device</string>
     <string name="poke_self">Poke Self</string>
     <string name="stop_ble_service">Stop Service</string>
-    <string name="action_disconnect">Disconnect</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
