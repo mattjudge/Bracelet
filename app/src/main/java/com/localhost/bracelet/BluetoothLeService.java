@@ -52,10 +52,6 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
-    public final static String REQUIRE_CONNECTION_INFO =
-            "com.example.bluetooth.le.REQUIRE_CONNECTION_INFO";
-    public final static String CONNECTION_INFO =
-            "com.example.bluetooth.le.CONNECTION_INFO";
     public final static String REQUIRE_CONNECTION_STATE =
             "com.example.bluetooth.le.REQUIRE_CONNECTION_STATE";
 
@@ -139,11 +135,6 @@ public class BluetoothLeService extends Service {
             }else if (DeviceControlActivity.ACTION_KILL_BLE_SERVICE.equals(action)) {
                 disconnect();
                 stopSelf();
-            }else if (REQUIRE_CONNECTION_INFO.equals(action)) {
-                Intent conn_info_intent = new Intent(CONNECTION_INFO);
-                conn_info_intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, mBluetoothDeviceAddress.toString());
-                conn_info_intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, mBluetoothGatt.getDevice().getName().toString());
-                sendBroadcast(conn_info_intent);
             }else if (REQUIRE_CONNECTION_STATE.equals(action)){
                 broadcastCurrentStateConnection();
             }
@@ -408,7 +399,6 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(DeviceControlActivity.ACTION_DEVICE_CONNECT);
         intentFilter.addAction(DeviceControlActivity.ACTION_DEVICE_DISCONNECT);
         intentFilter.addAction(DeviceControlActivity.ACTION_KILL_BLE_SERVICE);
-        intentFilter.addAction(REQUIRE_CONNECTION_INFO);
         intentFilter.addAction(REQUIRE_CONNECTION_STATE);
         return intentFilter;
     }

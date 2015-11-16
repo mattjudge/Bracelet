@@ -268,7 +268,8 @@ public class DeviceScanActivity extends AppCompatActivity {
             Log.w("adddevice", device.toString());
             if(!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
-                notifyItemInserted(mLeDevices.size() - 1);
+                //notifyItemInserted(mLeDevices.size() - 1);
+                notifyDataSetChanged();
             }
         }
 
