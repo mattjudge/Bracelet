@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -184,7 +183,7 @@ public class DeviceControlActivity extends AppCompatActivity {
                 sendBroadcast(new Intent(ACTION_DEVICE_CONNECT).putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress));
                 return true;
             case R.id.menu_disconnect:
-                KeyValueDB.setLastConnectedMac(mContext, null);
+                KeyValueDB.setLastConnectedDeviceMac(mContext, null);
                 sendBroadcast(new Intent(ACTION_DEVICE_DISCONNECT));
                 final Intent intentb = new Intent(this, DeviceScanActivity.class);
                 startActivity(intentb);

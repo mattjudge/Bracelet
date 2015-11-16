@@ -18,13 +18,23 @@ public class KeyValueDB {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public static String getLastConnectedMac(Context context) {
+    public static String getLastConnectedDeviceMac(Context context) {
         return getPrefs(context).getString("LAST_CONNECTED_MAC", null);
     }
 
-    public static void setLastConnectedMac(Context context, String input) {
+    public static void setLastConnectedDeviceMac(Context context, String input) {
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putString("LAST_CONNECTED_MAC", input);
+        editor.commit();
+    }
+
+    public static String getLastConnectedDeviceName(Context context) {
+        return getPrefs(context).getString("LAST_CONNECTED_NAME", null);
+    }
+
+    public static void setLastConnectedDeviceName(Context context, String input) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putString("LAST_CONNECTED_NAME", input);
         editor.commit();
     }
 

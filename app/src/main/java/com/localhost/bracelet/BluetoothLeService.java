@@ -135,6 +135,7 @@ public class BluetoothLeService extends Service {
                 connect(intent.getStringExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS));
             }else if (DeviceControlActivity.ACTION_DEVICE_DISCONNECT.equals(action)) {
                 disconnect();
+                stopSelf();
             }else if (DeviceControlActivity.ACTION_KILL_BLE_SERVICE.equals(action)) {
                 disconnect();
                 stopSelf();
@@ -214,7 +215,7 @@ public class BluetoothLeService extends Service {
             connect(deviceAddress);
         } else {
             // try and reconnect
-            connect(KeyValueDB.getLastConnectedMac(this));
+            connect(KeyValueDB.getLastConnectedDeviceMac(this));
         }
         startForeground(1, new Notification());
         return START_STICKY;
@@ -271,7 +272,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
-        KeyValueDB.setLastConnectedMac(this, address);
+        KeyValueDB.setLastConnectedDeviceMac(this, address);
         Toast.makeText(getApplicationContext(), "saved mac" + address, Toast.LENGTH_SHORT).show();
 
         // Previously connected device.  Try to reconnect.

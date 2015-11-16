@@ -1,7 +1,6 @@
 package com.localhost.bracelet;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -51,19 +50,6 @@ public class DeviceScanActivity extends AppCompatActivity {
     private RecyclerView mDevicesRecyclerView;
     private RecyclerView.LayoutManager mDevicesLayoutManager;
     private DevicesRecyclerAdapter mDevicesRecyclerAdapter;
-
-
-    private final BroadcastReceiver BleServiceReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (BluetoothLeService.CONNECTION_INFO.equals(action)) {
-                connectToNameAddress(
-                        intent.getStringExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME),
-                        intent.getStringExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS));
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,12 +115,10 @@ public class DeviceScanActivity extends AppCompatActivity {
             startService(intent);
         }
 
-        if (isBleServiceRunning(BluetoothLeService.class)){
-            // send broadcast requesting information to act on
-            sendBroadcast(new Intent(BluetoothLeService.REQUIRE_CONNECTION_INFO));
+        String lastAddress = KeyValueDB.getLastConnectedDeviceMac(mContext);
+        if (lastAddress != null) {
+            connectToNameAddress(KeyValueDB.getLastConnectedDeviceName(mContext), lastAddress);
         }
-
-
     }
 
     @Override
@@ -177,7 +161,6 @@ public class DeviceScanActivity extends AppCompatActivity {
         // gcm
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter("REGISTRATION_COMPLETE"));
-        registerReceiver(BleServiceReceiver, makeBleServiceIntentFilter());
 
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -205,7 +188,6 @@ public class DeviceScanActivity extends AppCompatActivity {
         // gcm
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         // end gcm
-        unregisterReceiver(BleServiceReceiver);
         super.onPause();
         scanLeDevice(false);
         mDevicesRecyclerAdapter.clear();
@@ -346,7 +328,7 @@ public class DeviceScanActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            String lastConnectedMac = KeyValueDB.getLastConnectedMac(getApplicationContext());
+                            String lastConnectedMac = KeyValueDB.getLastConnectedDeviceMac(getApplicationContext());
                             if (lastConnectedMac != null && lastConnectedMac.equals(device.getAddress())) {
                                 Toast.makeText(getApplicationContext(), "found same mac" + device.getAddress(), Toast.LENGTH_SHORT).show();
                                 connectToDevice(device);
@@ -376,21 +358,5 @@ public class DeviceScanActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-    private boolean isBleServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static IntentFilter makeBleServiceIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.CONNECTION_INFO);
-        return intentFilter;
     }
 }
