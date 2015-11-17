@@ -117,8 +117,12 @@ public class BluetoothLeService extends Service {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (MyGcmListenerService.ACTION_GCM_MESSAGE_AVAILABLE.equals(action)) {
-                writeToSerialCharacteristic(
-                        intent.getStringExtra(MyGcmListenerService.EXTRA_DATA));
+                if (mConnectionState == STATE_CONNECTED) {
+                    writeToSerialCharacteristic(
+                            intent.getStringExtra(MyGcmListenerService.EXTRA_DATA));
+                } else {
+                    Log.w("BLESERVICE", "Message available, not connected");
+                }
             }
         }
     };

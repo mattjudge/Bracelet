@@ -146,9 +146,13 @@ public class DeviceScanActivity extends AppCompatActivity {
                 scanLeDevice(false);
                 break;
             case R.id.action_settings:
-                final Intent intenta = new Intent(this, SettingsActivity.class);
-                startActivity(intenta);
-                return true;
+                final Intent intentSettings = new Intent(this, SettingsActivity.class);
+                startActivity(intentSettings);
+                break;
+            case R.id.action_device_control:
+                final Intent intentDeviceControl = new Intent(this, DeviceControlActivity.class);
+                startActivity(intentDeviceControl);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

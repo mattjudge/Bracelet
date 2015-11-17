@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Bracelet</string>
     <string name="action_settings">Settings</string>
+    <string name="action_device_control">Open Device Control</string>
     <string name="title_activity_device_control">DeviceControlActivity</string>
     <string name="ble_not_supported">BLE is not supported</string>
     <string name="label_data">Data:</string>
